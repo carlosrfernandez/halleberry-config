@@ -4,7 +4,38 @@ networks:
 volumes:
     pihole-data:
     pihole-dnsmasq-data:
+    unifi-data:
 services:
+  unifi:
+    image: ghcr.io/linuxserver/unifi-controller
+    container_name: unifi
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Madrid
+      - VIRTUAL_HOST=unifi.local
+      - VIRTUAL_PORT=8443
+      - VIRTUAL_PROTO=https
+      - VIRTUAL_NETWORK=home
+      - MEM_LIMIT=512M #optional
+      - MEM_STARTUP=512M #optional
+    volumes:
+      - 'unifi-data:/config'
+    expose:
+      - "8443"
+    ports:
+      - 3478:3478/udp
+      - 10001:10001/udp
+      - 8080:8080
+      - 8443:8443
+      - 1900:1900/udp #optional
+      - 8843:8843 #optional
+      - 8880:8880 #optional
+      - 6789:6789 #optional
+      - 5514:5514/udp #optional
+    restart: unless-stopped
+    networks: 
+      - home
   pihole:
     container_name: pihole
     image: pihole/pihole:v5.8.1-stretch
@@ -15,12 +46,13 @@ services:
       - "53:53/tcp"
       - "53:53/udp"
       - "67:67/udp"
-    #  - "80:80/tcp"
-    #  - "443:443/tcp"
+#      - "80:80/tcp"
+#      - "443:443/tcp"
     environment:
       - TZ=Europe/Madrid
       - WEBPASSWORD=raspberry
-      - VIRTUAL_HOST=pihole.maian.org,pihole.local
+      - VIRTUAL_HOST=pihole.local
+      - ServerIP=192.168.0.100
     # Volumes store your data between container upgrades
     volumes:
       - 'pihole-data:/etc/pihole/'
@@ -36,6 +68,7 @@ services:
     image: jwilder/nginx-proxy
     ports:
       - "80:80"
+      - "443:443"
     volumes:
       - /var/run/docker.sock:/tmp/docker.sock:ro
     restart: unless-stopped
