@@ -23,14 +23,7 @@ services:
       - 'unifi-data:/config'
     expose:
       - "8443"
-      - "8080"
-      - "3478/udp"
-      - "10001/udp"
-      - "1900/udp"
-      - "8843" # optional
-      - "8880" #optional
-      - "6789" #optional
-      - "5514/udp" #optional
+      - "8080WARN Unable to load properties from '/usr/lib/unifi/data/system.properties' - /usr/lib/unifi/data/system.properties (No such file or directory"
     ports:
       - 3478:3478/udp
       - 10001:10001/udp
@@ -46,7 +39,7 @@ services:
       - home
   pihole:
     container_name: pihole
-    image: pihole/pihole:latest
+    image: pihole/pihole:v5.8.1-stretch
     expose:
       - "80"
       - "443"
@@ -60,8 +53,8 @@ services:
       - TZ=Europe/Madrid
       - WEBPASSWORD=blahblah
       - VIRTUAL_HOST=pihole.local
-#      - ServerIP=192.168.1.100
-   # Volumes store your data between container upgrades
+      - ServerIP=192.168.1.100
+    # Volumes store your data between container upgrades
     volumes:
       - 'pihole-data:/etc/pihole/'
       - 'pihole-dnsmasq-data:/etc/dnsmasq.d/'
@@ -82,5 +75,3 @@ services:
 #   restart: unless-stopped
 #   networks:
 #      - home
-
-## esto aki signifa peptio

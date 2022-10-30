@@ -46,7 +46,7 @@ services:
       - home
   pihole:
     container_name: pihole
-    image: pihole/pihole:latest
+    image: pihole/pihole:v5.8.1-stretch
     expose:
       - "80"
       - "443"
