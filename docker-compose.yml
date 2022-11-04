@@ -7,7 +7,7 @@ volumes:
     unifi-data:
 services:
   unifi:
-    image: ghcr.io/linuxserver/unifi-controller
+    image: lscr.io/linuxserver/unifi-controller:latest
     container_name: unifi
     environment:
       - PUID=1000
@@ -38,7 +38,7 @@ services:
       - home
   pihole:
     container_name: pihole
-    image: pihole/pihole:v5.8.1-stretch
+    image: pihole/pihole:latest
     expose:
       - "80"
       - "443"
@@ -46,14 +46,11 @@ services:
       - "53:53/tcp"
       - "53:53/udp"
       - "67:67/udp"
-#      - "80:80/tcp"
-#      - "443:443/tcp"
     environment:
       - TZ=Europe/Madrid
       - WEBPASSWORD=raspberry
       - VIRTUAL_HOST=pihole.local
       - ServerIP=192.168.0.100
-    # Volumes store your data between container upgrades
     volumes:
       - 'pihole-data:/etc/pihole/'
       - 'pihole-dnsmasq-data:/etc/dnsmasq.d/'
