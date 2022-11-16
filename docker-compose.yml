@@ -83,3 +83,6 @@ services:
       - /home/pi/abs/:/podcasts
       - /home/pi/abs/config:/config
       - /home/pi/abs/metadata:/metadata
+    networks:
+      - home
+    restart: unless-stopped
