@@ -71,3 +71,15 @@ services:
     restart: unless-stopped
     networks:
       - home
+  audiobookshelf:
+    image: ghcr.io/advplyr/audiobookshelf:latest
+    environment:
+      - AUDIOBOOKSHELF_UID=99
+      - AUDIOBOOKSHELF_GID=100
+    ports:
+      - 13378:8811
+    volumes:
+      - /home/pi/abs/audiobooks:/audiobooks
+      - /home/pi/abs/:/podcasts
+      - /home/pi/abs/config:/config
+      - /home/pi/abs/metadata:/metadata
