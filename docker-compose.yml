@@ -10,7 +10,6 @@ services:
     network_mode: host
     environment:
       - TZ=Europe/Madrid
-      - WEBPASSWORD=raspberry
       - ServerIP=192.168.0.100
     volumes:
       - 'pihole-data:/etc/pihole/'
