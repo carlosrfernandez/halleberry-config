@@ -6,55 +6,26 @@ services:
   pihole:
     container_name: pihole
     image: pihole/pihole:latest
-    network_mode: host
+    environment:
+      TZ: Europe/Madrid
+      FTLCONF_LOCAL_IPV4: 192.168.1.100
+      DNSMASQ_LISTENING: all
     ports:
+      - "80:80/tcp"
       - "53:53/tcp"
       - "53:53/udp"
-      - "67:67/udp"
-      - "80:80/tcp"
-    environment:
-      - TZ=Europe/Madrid
-      - ServerIP=192.168.1.100
-      # Uncomment the line below if port 80 is already in use
-      # - WEB_PORT=8080
     volumes:
-      - 'pihole-data:/etc/pihole/'
-      - 'pihole-dnsmasq-data:/etc/dnsmasq.d/'
-    # Recommended but not required (DHCP needs NET_ADMIN)
-    #   https://github.com/pi-hole/docker-pi-hole#note-on-capabilities
-    cap_add:
-      - NET_ADMIN
+      - pihole-data:/etc/pihole/
+      - pihole-dnsmasq-data:/etc/dnsmasq.d/
     restart: unless-stopped
   homebridge:
     container_name: homebridge
     image: homebridge/homebridge:latest
-    restart: unless-stopped
-    network_mode: host
-    ports:
-      - "8581:8581"
     environment:
-      - TZ=Europe/Madrid
-      - HOMEBRIDGE_CONFIG_UI=1
-      - HOMEBRIDGE_CONFIG_UI_PORT=8581
+      TZ: Europe/Madrid
+    ports:
+      - "8581:8581/tcp"
+      - "51826:51826/tcp"
     volumes:
       - homebridge-data:/homebridge
-    logging:
-      driver: json-file
-      options:
-        max-size: "10mb"
-        max-file: "1"
-#  audiobookshelf:
-#    image: ghcr.io/advplyr/audiobookshelf:latest
-#    environment:
-#      - AUDIOBOOKSHELF_UID=99
-#      - AUDIOBOOKSHELF_GID=100
-#    ports:
-#      - 13378:8811
-#    volumes:
-#      - /home/pi/abs/audiobooks:/audiobooks
-#      - /home/pi/abs/:/podcasts
-#      - /home/pi/abs/config:/config
-#      - /home/pi/abs/metadata:/metadata
-#    networks:
-#      - home
-#    restart: unless-stopped
+    restart: unless-stopped
