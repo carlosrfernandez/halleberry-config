@@ -20,7 +20,7 @@ This prompts you to enter a new password securely without exposing it in logs or
 
 ### Method 2: Set Password via Web Interface
 
-1. Access Pi-hole web interface at `http://192.168.0.100`
+1. Access Pi-hole web interface at `http://192.168.1.100`
 2. If no password is set, you'll be prompted to set one
 3. Navigate to Settings → System → Change Password
 
@@ -46,6 +46,66 @@ If you need automated setup, use Docker secrets with `WEBPASSWORD_FILE`:
    ```
 
 **Note:** Method 1 is the most secure as it doesn't store the password in any file or environment variable.
+
+## Pi-hole Access Troubleshooting (Raspberry Pi)
+
+If you can't access Pi-hole at `http://192.168.1.100`, check the following:
+
+### 1. Verify Container is Running
+```bash
+docker ps | grep pihole
+```
+
+### 2. Check Container Logs
+```bash
+docker logs pihole
+```
+Look for any errors or the initial password if it's a fresh install.
+
+### 3. Check if Port 80 is in Use
+Another service might be using port 80:
+```bash
+sudo netstat -tuln | grep :80
+# or
+sudo ss -tuln | grep :80
+```
+
+If something is using port 80, you can either:
+- Stop the conflicting service
+- Use an alternative port by uncommenting `WEB_PORT=8080` in docker-compose.yml
+
+### 4. Verify Raspberry Pi IP Address
+Make sure the IP matches your actual Pi IP:
+```bash
+hostname -I
+# or
+ip addr show
+```
+
+Update `ServerIP` in docker-compose.yml if it doesn't match.
+
+### 5. Check Firewall (if enabled)
+If you have a firewall enabled:
+```bash
+sudo ufw status
+sudo ufw allow 80/tcp
+```
+
+### 6. Test from the Pi Itself
+Try accessing from the Pi directly:
+```bash
+curl http://localhost/admin/
+# or
+curl http://192.168.1.100/admin/
+```
+
+### 7. Verify Network Mode
+With `network_mode: host`, the container uses the host's network directly. Make sure:
+- No other Docker containers are conflicting
+- The Pi's network interface is up: `ip link show`
+
+### 8. Alternative: Use Different Port
+If port 80 conflicts persist, uncomment `WEB_PORT=8080` in docker-compose.yml and access at `http://192.168.1.100:8080/admin/`
 
 ## SSH key generation with elliptical curves
 

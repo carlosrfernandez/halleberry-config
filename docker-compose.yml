@@ -7,9 +7,16 @@ services:
     container_name: pihole
     image: pihole/pihole:latest
     network_mode: host
+    ports:
+      - "53:53/tcp"
+      - "53:53/udp"
+      - "67:67/udp"
+      - "80:80/tcp"
     environment:
       - TZ=Europe/Madrid
       - ServerIP=192.168.1.100
+      # Uncomment the line below if port 80 is already in use
+      # - WEB_PORT=8080
     volumes:
       - 'pihole-data:/etc/pihole/'
       - 'pihole-dnsmasq-data:/etc/dnsmasq.d/'
@@ -23,6 +30,8 @@ services:
     image: homebridge/homebridge:latest
     restart: unless-stopped
     network_mode: host
+    ports:
+      - "8581:8581"
     environment:
       - TZ=Europe/Madrid
       - HOMEBRIDGE_CONFIG_UI=1
