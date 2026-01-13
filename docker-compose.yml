@@ -1,25 +1,16 @@
 version: '3'
-networks:
-  home:
 volumes:
-    pihole-data:
-    pihole-dnsmasq-data:
-    unifi-data:
+  pihole-data:
+  pihole-dnsmasq-data:
+  homebridge-data:
 services:
   pihole:
     container_name: pihole
     image: pihole/pihole:latest
-    expose:
-      - "80"
-      - "443"
-    ports:
-      - "53:53/tcp"
-      - "53:53/udp"
-      - "67:67/udp"
+    network_mode: host
     environment:
       - TZ=Europe/Madrid
       - WEBPASSWORD=raspberry
-      - VIRTUAL_HOST=pihole.local
       - ServerIP=192.168.0.100
     volumes:
       - 'pihole-data:/etc/pihole/'
@@ -29,18 +20,22 @@ services:
     cap_add:
       - NET_ADMIN
     restart: unless-stopped
-    networks:
-      - home
-  nginx-proxy:
-    image: jwilder/nginx-proxy
-    ports:
-      - "80:80"
-      - "443:443"
-    volumes:
-      - /var/run/docker.sock:/tmp/docker.sock:ro
+  homebridge:
+    container_name: homebridge
+    image: homebridge/homebridge:latest
     restart: unless-stopped
-    networks:
-      - home
+    network_mode: host
+    environment:
+      - TZ=Europe/Madrid
+      - HOMEBRIDGE_CONFIG_UI=1
+      - HOMEBRIDGE_CONFIG_UI_PORT=8581
+    volumes:
+      - homebridge-data:/homebridge
+    logging:
+      driver: json-file
+      options:
+        max-size: "10mb"
+        max-file: "1"
 #  audiobookshelf:
 #    image: ghcr.io/advplyr/audiobookshelf:latest
 #    environment:
